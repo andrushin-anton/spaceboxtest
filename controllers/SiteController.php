@@ -2,38 +2,12 @@
 
 namespace app\controllers;
 
+use app\models\Customers;
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 
 class SiteController extends Controller
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
-
     public function actions()
     {
         return [
@@ -49,48 +23,35 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        return $this->render('index', [
+						'customers' => Customers::find()->all(),
+				]);
     }
 
-    public function actionLogin()
-    {
-        if (!\Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
+		public function actionView()
+		{
+				$groupId = Yii::$app->request->get('groupId');
+				$skillId = Yii::$app->request->get('skillId');
+				$search = Yii::$app->request->get('search');
 
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        } else {
-            return $this->render('login', [
-                'model' => $model,
-            ]);
-        }
-    }
+				$where = [];
+				if(!empty($groupId))
+						$where['customers_groups.group_id'] = (int)$groupId;
+				if(!empty($skillId))
+						$where['customers_skills.skill_id'] = (int)$skillId;
 
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
+				$customers = Customers::find()
+						->joinWith('customersGroups')
+						->joinWith('customersSkills')
+						->where($where);
 
-        return $this->goHome();
-    }
+				if (!empty($search))
+				{
+						$customers->andWhere(['like', 'customers.name', $search]);
+				}
 
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        } else {
-            return $this->render('contact', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
+				return $this->render('index', [
+						'customers' => $customers->all(),
+				]);
+		}
 }

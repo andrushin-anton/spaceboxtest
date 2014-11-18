@@ -1,6 +1,6 @@
 {
-    "name": "yiisoft/yii2-app-basic",
-    "description": "Yii 2 Basic Application Template",
+    "name": "Spacebox test application",
+    "description": "Blah blah blah",
     "keywords": ["yii2", "framework", "basic", "application template"],
     "homepage": "http://www.yiiframework.com/",
     "type": "project",

@@ -23,45 +23,39 @@ AppAsset::register($this);
 <body>
 
 <?php $this->beginBody() ?>
-    <div class="wrap">
-        <?php
-            NavBar::begin([
-                'brandLabel' => 'My Company',
-                'brandUrl' => Yii::$app->homeUrl,
-                'options' => [
-                    'class' => 'navbar-inverse navbar-fixed-top',
-                ],
-            ]);
-            echo Nav::widget([
-                'options' => ['class' => 'navbar-nav navbar-right'],
-                'items' => [
-                    ['label' => 'Home', 'url' => ['/site/index']],
-                    ['label' => 'About', 'url' => ['/site/about']],
-                    ['label' => 'Contact', 'url' => ['/site/contact']],
-                    Yii::$app->user->isGuest ?
-                        ['label' => 'Login', 'url' => ['/site/login']] :
-                        ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                            'url' => ['/site/logout'],
-                            'linkOptions' => ['data-method' => 'post']],
-                ],
-            ]);
-            NavBar::end();
-        ?>
-
-        <div class="container">
-            <?= Breadcrumbs::widget([
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]) ?>
-            <?= $content ?>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container">
-            <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
-            <p class="pull-right"><?= Yii::powered() ?></p>
-        </div>
-    </footer>
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="container-fluid">
+						<div class="navbar-header">
+								<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+										<span class="sr-only">Toggle navigation</span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+										<span class="icon-bar"></span>
+								</button>
+								<a class="navbar-brand" href="/"><?php echo Yii::$app->id?></a>
+						</div>
+						<div id="navbar" class="navbar-collapse collapse">
+								<ul class="nav navbar-nav navbar-right">
+										<li><a href="#">Dashboard</a></li>
+										<li><a href="#">Settings</a></li>
+										<li><a href="#">Profile</a></li>
+										<li><a href="#">Help</a></li>
+								</ul>
+								<?php echo \app\widgets\SearchWidget::widget(['searchText' => \app\helpers\CustomerHelper::getActiveSearch()])?>
+						</div>
+				</div>
+		</nav>
+		<div class="container-fluid">
+				<div class="row">
+						<div class="col-sm-3 col-md-2 sidebar">
+								<?php echo \app\widgets\NavWidget::widget([
+										'activeGroup' => \app\helpers\CustomerHelper::getActiveGroup(),
+										'activeSkill' => \app\helpers\CustomerHelper::getActiveSkill()
+								]) ?>
+						</div>
+						<?= $content ?>
+				</div>
+		</div>
 
 <?php $this->endBody() ?>
 </body>
